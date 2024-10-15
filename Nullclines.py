@@ -33,6 +33,28 @@ for i, point in enumerate(fixed_points):
     else:
         plt.plot(point[0], point[1], 'C1o', markersize=8)
 
+def jacobian(B, v):
+    df_dB = -a + 2 * v
+    df_dv = 2 * B
+    dg_dB = -2 * B
+    dg_dv = -2 * v
+    return np.array([[df_dB, df_dv], [dg_dB, dg_dv]])
+for point in fixed_points:
+    B_fp, v_fp = point
+    J = jacobian(B_fp, v_fp)
+    det_J = np.linalg.det(J)
+    trace_J = np.trace(J)
+    
+    print(f"Fixed point at (B, v) = ({B_fp}, {v_fp})")
+    print(f"Determinant of Jacobian: {det_J}")
+    print(f"Trace of Jacobian: {trace_J}")
+    if det_J > 0 and trace_J < 0:
+        print("Stable node\n")
+    elif det_J > 0 and trace_J > 0:
+        print("Unstable node\n")
+    elif det_J < 0:
+        print("Saddle point\n")
+
 
 
 
