@@ -1,8 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-a = 0.5
-c = 1.5
+a = 2.0
+c = 1.0
 
 def f(B, v):
     return -a * B + 2 * B * v
@@ -50,6 +50,6 @@ plt.ylabel("v (Plasma velocity)")
 
 
 plt.legend(loc="upper right")
-
+plt.savefig("a=2,c=1.svg", bbox_inches='tight')
 plt.show()
 
