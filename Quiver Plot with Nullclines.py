@@ -29,7 +29,7 @@ plt.figure(figsize=(8, 8))
 plt.axvline(0, color='r', linestyle='--', label='B-nullcline')
 plt.axhline(a / 2, color='r', linestyle='--')
 plt.plot(B_values, v_v_nullcline_pos, 'g-', label="v-nullcline")
-plt.plot(B_values, v_v_nullcline_neg, 'g-', label=None) 
+plt.plot(B_values, v_v_nullcline_neg, 'g-') 
 
 fixed_points = [(0, np.sqrt(c)), (0, -np.sqrt(c))]
 if c > a**2 / 4:
@@ -42,7 +42,7 @@ for i, point in enumerate(fixed_points):
         plt.plot(point[0], point[1], 'C1o', markersize=8)
 
 
-plt.quiver(B_grid, v_grid, dB_dt, dv_dt, color='b')
+plt.streamplot(B_grid, v_grid, dB_dt, dv_dt, color='C7', density=1.2)
 
 
 plt.xlabel("B (Magnetic field)")
