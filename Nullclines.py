@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-a = 1.0
+a = 0.5
 c = 1.5
 
 B_values = np.linspace(-np.sqrt(c), np.sqrt(c), 400)
@@ -37,5 +37,5 @@ for i, point in enumerate(fixed_points):
 
 
 plt.legend(loc="upper right")
-
+plt.savefig("a=0.5,c=1.5.svg", bbox_inches='tight')
 plt.show()
