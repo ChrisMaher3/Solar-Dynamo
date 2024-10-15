@@ -4,6 +4,12 @@ import matplotlib.pyplot as plt
 a = 0.5
 c = 1.5
 
+def f(B, v):
+    return -a * B + 2 * B * v
+
+def g(B, v):
+    return c - B**2 - v**2
+
 B_values = np.linspace(-np.sqrt(c), np.sqrt(c), 400)
 
 v_B_nullcline = a / 2 * np.ones_like(B_values)  
@@ -60,4 +66,19 @@ for point in fixed_points:
 
 plt.legend(loc="upper right")
 #plt.savefig("a=0.5,c=1.5.svg", bbox_inches='tight')
+#plt.show()
+
+B_values = np.linspace(-2, 2, 20)
+v_values = np.linspace(-2, 2, 20)
+B, v = np.meshgrid(B_values, v_values)
+
+dB_dt = f(B, v)
+dv_dt = g(B, v)
+
+plt.figure(figsize=(8, 8))
+plt.quiver(B, v, dB_dt, dv_dt, color='b')
+plt.title("Quiver Plot of the System Dynamics")
+plt.xlabel("B (Magnetic field)")
+plt.ylabel("v (Plasma velocity)")
+
 plt.show()
