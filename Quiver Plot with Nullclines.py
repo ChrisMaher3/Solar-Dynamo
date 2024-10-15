@@ -50,6 +50,6 @@ plt.ylabel("v (Plasma velocity)")
 
 
 plt.legend(loc="upper right")
-plt.savefig("a=2,c=1.svg", bbox_inches='tight')
+#plt.savefig("a=2,c=1.svg", bbox_inches='tight')
 plt.show()
 
