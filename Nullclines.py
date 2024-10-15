@@ -37,5 +37,5 @@ for i, point in enumerate(fixed_points):
 
 
 plt.legend(loc="upper right")
-plt.savefig("a=0.5,c=1.5.svg", bbox_inches='tight')
+#plt.savefig("a=0.5,c=1.5.svg", bbox_inches='tight')
 plt.show()
