@@ -2,91 +2,49 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.integrate import solve_ivp
 
-# Parameters
-a = 0.5
-c = 1.5
+a_stable = 0.5
+c_stable = 0.25  # c < a^2 / 4
+a_unstable = 2.0
+c_unstable = 2.0  # c > a^2 / 4
 
-# Define the system of differential equations
-def system(t, y):
+def system(t, y, a, c):
     B, v = y
-    dB_dt = -a * B + 2 * B * v  # dB/dt
-    dv_dt = c - B**2 - v**2      # dv/dt
-    return [dB_dt, dv_dt]
+    dBdt = -a * B + 2 * B * v
+    dvdt = c - B**2 - v**2
+    return [dBdt, dvdt]
 
-# Time span for the integration
-t_span = (0, 20)  # Shorter time to avoid blow-up
-t_eval = np.linspace(0, 20, 1000)  # Evaluation points for plotting
+initial_conditions_stable = [0.1, a_stable / 2]  
+initial_conditions_unstable = [1.0, a_unstable / 2]  
 
-# Initial conditions near the fixed points for exploration
-initial_conditions = [
-    (0.1, np.sqrt(c)),  # Near stable point (0, sqrt(c))
-    (0.1, -np.sqrt(c)), # Near stable point (0, -sqrt(c))
-    (np.sqrt(c - a**2 / 4) + 0.1, a / 2), # Near saddle point (sqrt(c - a^2 / 4), a / 2)
-    (-np.sqrt(c - a**2 / 4) + 0.1, a / 2) # Near saddle point (-sqrt(c - a^2 / 4), a / 2)
-]
+t_span = (0, 10)  
+t_eval = np.linspace(t_span[0], t_span[1], 100)
 
-# Solving the system for each initial condition with a stiffer method
-solutions = []
-for init_cond in initial_conditions:
-    sol = solve_ivp(system, t_span, init_cond, t_eval=t_eval, method='LSODA')  # Use stiff solver
-    solutions.append(sol)
+sol_stable = solve_ivp(system, t_span, initial_conditions_stable, args=(a_stable, c_stable), t_eval=t_eval)
 
-# Plot B(t) and v(t) for each initial condition
+sol_unstable = solve_ivp(system, t_span, initial_conditions_unstable, args=(a_unstable, c_unstable), t_eval=t_eval)
+
 plt.figure(figsize=(12, 6))
-
-# Plot B(t) (Magnetic Field over time)
 plt.subplot(1, 2, 1)
-for i, sol in enumerate(solutions):
-    plt.plot(sol.t, sol.y[0], label=f"Initial B={initial_conditions[i][0]:.2f}, v={initial_conditions[i][1]:.2f}")
-plt.title("B(t) - Magnetic Field Evolution")
-plt.xlabel("Time (t)")
-plt.ylabel("B(t)")
-plt.grid(True)
+plt.plot(sol_stable.t, sol_stable.y[0], 'b--', label='B(t) - Stable')
+plt.plot(sol_stable.t, sol_stable.y[1], 'g--', label='v(t) - Stable')
+plt.title('Stable Case: B(t) and v(t)')
+plt.xlabel('Time')
+plt.ylabel('Values')
+plt.legend()
 
-# Plot v(t) (Plasma velocity over time)
+# Plot B(t) and v(t) for unstable case
 plt.subplot(1, 2, 2)
-for i, sol in enumerate(solutions):
-    plt.plot(sol.t, sol.y[1], label=f"Initial B={initial_conditions[i][0]:.2f}, v={initial_conditions[i][1]:.2f}")
-plt.title("v(t) - Plasma Velocity Evolution")
-plt.xlabel("Time (t)")
-plt.ylabel("v(t)")
-plt.grid(True)
-
-plt.legend(loc='best')
+plt.plot(sol_unstable.t, sol_unstable.y[0], 'b--', label='B(t) - Unstable')
+plt.plot(sol_unstable.t, sol_unstable.y[1], 'g--', label='v(t) - Unstable')
+plt.title('Unstable Case: B(t) and v(t)')
+plt.xlabel('Time')
+plt.ylabel('Values')
+plt.legend()
 plt.tight_layout()
+plt.savefig("stable and unstable.svg", bbox_inches='tight')
 plt.show()
 
-# Phase plane plot with trajectories
-plt.figure(figsize=(8, 8))
 
-# Create nullclines
-B_values = np.linspace(-np.sqrt(c), np.sqrt(c), 400)
-v_B_nullcline = a / 2 * np.ones_like(B_values)
-v_v_nullcline_pos = np.sqrt(c - B_values**2)
-v_v_nullcline_neg = -np.sqrt(c - B_values**2)
 
-# Plot the nullclines
-plt.axvline(0, color='r', linestyle='--', label='B-nullcline')
-plt.axhline(a / 2, color='r', linestyle='--', label=None)
-plt.plot(B_values, v_v_nullcline_pos, 'g-', label="v-nullcline")
-plt.plot(B_values, v_v_nullcline_neg, 'g-', label=None)  # Negative branch of v-nullcline
 
-# Plot fixed points
-fixed_points = [(0, np.sqrt(c)), (0, -np.sqrt(c))]
-if c > a**2 / 4:
-    fixed_points.extend([(np.sqrt(c - a**2 / 4), a / 2), (-np.sqrt(c - a**2 / 4), a / 2)])
 
-for i, point in enumerate(fixed_points):
-    plt.plot(point[0], point[1], 'C1o', markersize=8, label="Fixed Points" if i == 0 else None)
-
-# Plot the phase trajectories
-for sol in solutions:
-    plt.plot(sol.y[0], sol.y[1], label="Phase Trajectory")
-
-# Labels and title
-plt.xlabel("B (Magnetic field)")
-plt.ylabel("v (Plasma velocity)")
-plt.title("Phase Plane with Nullclines and Trajectories")
-plt.grid(True)
-plt.legend(loc="upper right")
-plt.show()
